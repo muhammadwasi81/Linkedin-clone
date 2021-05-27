@@ -2,10 +2,13 @@ import styled from "styled-components";
 import LeftSide from "./LeftSide";
 import Main from "./Main";
 import RightSide from "./RightSide";
+import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 
-const Home = () => {
+const Home = (props) => {
   return (
     <Container>
+      {!props.user && <Redirect to="/" />}
       <Section>
         <h5>
           <a>Hiring in a hurry -</a>
@@ -16,9 +19,9 @@ const Home = () => {
         </p>
       </Section>
       <Layout>
-          <LeftSide/>
-          <RightSide />
-          <Main/>
+        <LeftSide />
+        <RightSide />
+        <Main />
       </Layout>
     </Container>
   );
@@ -28,11 +31,11 @@ const Container = styled.div`
   padding: 52px;
   max-width: 100%;
 `;
-const Content = styled.div`
-  max-width: 1128px;
-  margin-left: auto;
-  margin-right: auto;
-`;
+// const Content = styled.div`
+//   max-width: 1128px;
+//   margin-left: auto;
+//   margin-right: auto;
+// `;
 
 const Section = styled.section`
   min-height: 50px;
@@ -67,9 +70,16 @@ const Layout = styled.div`
   /* grid-template-rows: auto; */
   margin: 25px;
   @media (max-width: 768px) {
-      display: flex;
-      flex-direction: column;
-      padding: 0 5px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 5px;
   }
 `;
-export default Home;
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps)(Home);

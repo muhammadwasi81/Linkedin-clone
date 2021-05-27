@@ -1,6 +1,9 @@
 import styled from "styled-components";
+import PostModal from './PostModal';
+import { useState } from "react";
 
 const Main = (props) => {
+  const [showModal, setShowModal] = useState('close');
   return (
     <Container>
       <ShareBox>
@@ -12,7 +15,6 @@ const Main = (props) => {
         <div>
           <button>
             <svg
-              className="photo1"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               data-supported-dps="24x24"
@@ -29,7 +31,6 @@ const Main = (props) => {
 
           <button>
             <svg
-              className="photo2"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               data-supported-dps="24x24"
@@ -62,7 +63,6 @@ const Main = (props) => {
 
           <button>
             <svg
-              className="photo"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               data-supported-dps="24x24"
@@ -83,7 +83,6 @@ const Main = (props) => {
           <SharedActor>
             <a>
               <svg
-                className="photo3"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 data-supported-dps="24x24"
@@ -103,7 +102,6 @@ const Main = (props) => {
             </a>
             <button>
               <svg
-                className="photo4"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 data-supported-dps="24x24"
@@ -203,6 +201,7 @@ const Main = (props) => {
           </SocialActions>
         </Article>
       </div>
+    <PostModal />
     </Container>
   );
 };

@@ -22,10 +22,20 @@ export function signInAPI() {
 
 export function getUserAuth() {
   return (dispatch) => {
-    auth.onAuthStateChange(async (user) => {
+    auth.onAuthStateChanged(async (user) => {
       if (user) {
         dispatch(setUser(user));
       }
+    });
+  };
+}
+
+export function SignOutAPI() {
+  return (dispatch) => {
+    auth.signOut().then(() => {
+      dispatch(setUser(null));
+    }).catch((err) => {
+       console.log(err.message);
     });
   };
 }
