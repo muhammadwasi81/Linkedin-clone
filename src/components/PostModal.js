@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import { useState } from "react";
 import ReactPlayer from "react-player";
-import {connect } from 'react-redux';
+import { connect } from "react-redux";
+import firebase from 'firebase';
+import { postArticleAPI } from '../actions'
 
 const PostModel = (props) => {
   const [editorText, setEditorText] = useState("");
@@ -24,6 +26,24 @@ const PostModel = (props) => {
     setVideoLink("");
     setAssetArea(area);
   };
+
+  const postArticle = (e) => {
+    console.log("post malone");
+    e.preventDefault();
+    if(e.target !== e.currentTarget) {
+      console.log('hello');
+      return;
+    }
+  const payload = {
+    image: shareImage,
+    video:videoLink,
+    user: props.user,
+    description: editorText,
+    timestamp: firebase.firestore.Timestamp.now(),
+  };
+  props.postArticle(payload);
+  reset(e);
+}
 
   const reset = (e) => {
     setEditorText("");
@@ -56,8 +76,12 @@ const PostModel = (props) => {
             </Header>
             <SharedContent>
               <UserInfo>
-                <img src="/images/user.svg" alt="" />
-                <span>Name</span>
+                {props.user.photoURL ? (
+                  <img src={props.user.photoURL} alt="" />
+                ) : (
+                  <img src="/images/user.svg" alt="" />
+                )}
+                <span>{props.user.displayName}</span>
               </UserInfo>
               <EditorText>
                 <textarea
@@ -151,7 +175,8 @@ const PostModel = (props) => {
                 </AssetButton>
               </ShareComment>
 
-              <PostButton disabled={!editorText ? true : false}>
+              <PostButton disabled={!editorText ? true : false} 
+              onClick={(event) => postArticle(event)}>
                 Post
               </PostButton>
             </SharedCreation>
@@ -185,6 +210,7 @@ const Content = styled.div`
   top: 32px;
   margin: 0 auto;
 `;
+
 const Header = styled.div`
   display: block;
   padding: 16px 20px;
@@ -301,5 +327,14 @@ const UploadImage = styled.div`
     image-rendering: pixelated;
   }
 `;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
 
-export default PostModel;
+const mapDispatchToProps = (dispatch) => ({
+  postArticle: (payload) => dispatch(postArticleAPI(payload)), 
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostModel);
