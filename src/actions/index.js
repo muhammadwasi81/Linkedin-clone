@@ -1,6 +1,6 @@
 import { auth, provider, storage } from "../components/firebase.js";
 import db from "../components/firebase";
-import { SET_USER, SET_LOADING_STATUS } from "./actionType";
+import { SET_USER, SET_LOADING_STATUS, GET_ARTICLES } from "./actionType";
 
 export const setUser = (payload) => ({
   type: SET_USER,
@@ -9,7 +9,12 @@ export const setUser = (payload) => ({
 
 export const setLoading = (status) => ({
   type: SET_LOADING_STATUS,
-  status: status, 
+  status: status,
+});
+
+export const getArticles = (payload) => ({
+  type: GET_ARTICLES,
+  payload: payload,
 });
 
 export function signInAPI() {
@@ -25,7 +30,6 @@ export function signInAPI() {
       });
   };
 }
-
 
 export function getUserAuth() {
   return (dispatch) => {
@@ -52,17 +56,19 @@ export function SignOutAPI() {
 
 export function postArticleAPI(payload) {
   return (dispatch) => {
-    if (payload.image != "") {
+    dispatch(setLoading(true));
+    if (payload.image !== "") {
       const upload = storage
         .ref(`/images/${payload.image.name}`)
         .put(payload.image);
       upload.on(
         "state_changed",
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.total) * 100;
-
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`progress: ${progress}%`);
           if (snapshot.state === "RUNNING") {
-            console.log(`Progress: $(progress)%`);
+            // console.log(`Progress: ${progress}%`);
           }
         },
         (error) => console.log(error.code),
@@ -80,6 +86,7 @@ export function postArticleAPI(payload) {
             comments: 0,
             description: payload.description,
           });
+          dispatch(setLoading(false));
         }
       );
     } else if (payload.video) {
@@ -94,6 +101,19 @@ export function postArticleAPI(payload) {
         comments: 0,
         description: payload.description,
       });
+      dispatch(setLoading(false));
     }
+  };
+}
+
+export function getArticleAPI() {
+  return (dispatch) => {
+    let payload;
+    db.collection("articles")
+      .orderBy("actor.data", "desc")
+      .onSnapshot((snapshot) => {
+        payload = snapshot.docs.map((doc) => doc.data());
+        dispatch(getArticles(payload));
+      });
   };
 }
